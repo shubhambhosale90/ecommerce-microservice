@@ -1,13 +1,11 @@
 package com.smasher.ecommerce.order_service.controller;
 
+import com.smasher.ecommerce.order_service.clients.InventoryOpenFeignClient;
 import com.smasher.ecommerce.order_service.dto.OrderRequestDto;
 import com.smasher.ecommerce.order_service.service.OrderService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -33,5 +31,11 @@ public class OrderController {
     public ResponseEntity<OrderRequestDto> getOrderById(@PathVariable Long id) {
         OrderRequestDto order = orderService.getOrderById(id);
         return ResponseEntity.ok(order);
+    }
+
+    @PostMapping("/create-order")
+    public ResponseEntity<OrderRequestDto> createOrder(@RequestBody OrderRequestDto orderRequestDto) {
+        OrderRequestDto orderRequestDto1 = orderService.createOrder(orderRequestDto);
+        return ResponseEntity.ok(orderRequestDto1);
     }
 }
