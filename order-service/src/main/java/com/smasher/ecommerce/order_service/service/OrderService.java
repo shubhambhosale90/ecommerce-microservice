@@ -6,6 +6,8 @@ import com.smasher.ecommerce.order_service.entity.OrderItem;
 import com.smasher.ecommerce.order_service.entity.OrderStatus;
 import com.smasher.ecommerce.order_service.entity.Orders;
 import com.smasher.ecommerce.order_service.repository.OrderRepository;
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
+import io.github.resilience4j.ratelimiter.annotation.RateLimiter;
 import io.github.resilience4j.retry.annotation.Retry;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -38,7 +40,9 @@ public class OrderService {
         return modelMapper.map(order, OrderRequestDto.class);
     }
 
-    @Retry(name = "inventoryRetry", fallbackMethod = "createOrderFallback")
+//    @Retry(name = "inventoryRetry", fallbackMethod = "createOrderFallback")
+    @RateLimiter(name = "inventoryRateLimiter", fallbackMethod = "createOrderFallback")
+    @CircuitBreaker(name = "inventoryCircuitBreaker", fallbackMethod = "createOrderFallback")
     public OrderRequestDto createOrder(OrderRequestDto orderRequestDto) {
         log.info("Calling the createOrder method");
         Double totalPrice = inventoryOpenFeignClient.reduceStock(orderRequestDto);
